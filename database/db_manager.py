@@ -7,9 +7,11 @@ class PengelolaDatabase:
         folder = os.path.dirname(self.lokasi_db)
         if folder != "" and not os.path.exists(folder):
             os.makedirs(folder)
+        self.inisialisasi_db()
 
     def buat_koneksi(self):
         koneksi = sqlite3.connect(self.lokasi_db)
+        koneksi.row_factory = sqlite3.Row
         koneksi.execute("PRAGMA foreign_keys = ON;")
         return koneksi
 

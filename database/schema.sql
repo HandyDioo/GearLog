@@ -1,4 +1,4 @@
-#tabel users / pengguna
+-- tabel users / pengguna
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_code TEXT UNIQUE NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
-#tabel items / barang lab
+-- tabel items / barang lab
 CREATE TABLE IF NOT EXISTS items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     item_code TEXT UNIQUE NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS items (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
-#tabel peminjaman
+-- tabel peminjaman
 CREATE TABLE IF NOT EXISTS loans (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     loan_code TEXT UNIQUE NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS loans (
     FOREIGN KEY (collected_by_id) REFERENCES users (id)
 );
 
-#detail barang yg dipinjam
+-- detail barang yg dipinjam
 CREATE TABLE IF NOT EXISTS loan_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     loan_id INTEGER NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS loan_details (
     FOREIGN KEY (item_id) REFERENCES items (id)
 );
 
-#tabel pengembalian
+-- tabel pengembalian
 CREATE TABLE IF NOT EXISTS returns (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     loan_id INTEGER NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS returns (
     FOREIGN KEY (returner_id) REFERENCES users (id)
 );
 
-#detail barang yg dikembalikan
+-- detail barang yg dikembalikan
 CREATE TABLE IF NOT EXISTS return_details (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     return_id INTEGER NOT NULL,

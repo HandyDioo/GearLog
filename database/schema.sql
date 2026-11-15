@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS items (
 );
 
 CREATE TABLE IF NOT EXISTS loans (
-    id INTEGERR PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     loan_code TEXT UNIQUE NOT NULL,
     responsible_id INTEGER NOT NULL,
     requested_by_id INTEGER,
@@ -30,8 +30,27 @@ CREATE TABLE IF NOT EXISTS loans (
     loan_date TEXT NOT NULL,
     due_date TEXT,
     status TEXT DEFAULT 'Dipinjam',
-    notes TEXT
-    FOREIGN KEY (responsible_id) REFERENCES users (users_id),
-    FOREIGN KEY (requested_by_id) REFERENCES users (users_id),
-    FOREIGN KEY (collected_by_id) REFERENCES users (users_id)
+    notes TEXT,
+    FOREIGN KEY (responsible_id) REFERENCES users (id),
+    FOREIGN KEY (requested_by_id) REFERENCES users (id),
+    FOREIGN KEY (collected_by_id) REFERENCES users (id)
+);
+
+CREATE TABLE IF NOT EXISTS loan_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    loan_id INTEGER NOT NULL,
+    item_id INTEGER NOT NULL,
+    quantity_borrowed INTEGER NOT NULL,
+    FOREIGN KEY (loan_id) REFERENCES loans (id),
+    FOREIGN KEY (item_id) REFERENCES items (id)
+);
+
+CREATE TABLE IF NOT EXISTS returns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    loan_id INTEGER NOT NULL,
+    returner_id INTEGER NOT NULL,
+    return_date TEXT NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (loan_id) REFERENCES loans (id),
+    FOREIGN KEY (returner_id) REFERENCES users (id)
 );

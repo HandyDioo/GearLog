@@ -1,5 +1,6 @@
 import os
 import sys
+import sqlite3
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -14,7 +15,6 @@ def cek_tabel_database():
     kursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
     
     daftar_tabel = [baris["name"] for baris in kursor.fetchall()]
-    koneksi.close()
     
     tabel_wajib = ["users", "items", "loans", "loan_details", "returns", "return_details"]
     
@@ -24,7 +24,20 @@ def cek_tabel_database():
             print(f"[OK] Tabel '{tabel}' berhasil dibuat.")
         else:
             print(f"[GAGAL] Tabel '{tabel}' tidak ditemukan!")
-            
+
+    # Uji simpan dan baca data
+    kursor.execute("""
+        INSERT INTO items (item_code, name, category, total_stock, available_stock)
+        VALUES ('NET-001', 'Kabel LAN', 'Jaringan', 50, 50)
+    """)
+    koneksi.commit()
+
+    kursor.execute("SELECT * FROM items WHERE item_code = 'NET-001'")
+    barang = kursor.fetchone()
+    if barang:
+        print(f"[OK] Simpan & baca data berhasil: {barang['name']} (Stok: {barang['total_stock']})")
+
+    koneksi.close()
     if os.path.exists(db_percobaan):
         os.remove(db_percobaan)
 

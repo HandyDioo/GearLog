@@ -11,14 +11,27 @@ def uji_layanan_pengguna():
     db = PengelolaDatabase(lokasi_db=db_tes)
     layanan = LayananPengguna(db)
 
+    #add siswa dan guru
     kode1 = layanan.tambah_pengguna("Andi Saputra", "Student", nis="12345", kelas="XI TKJ 1")
     kode2 = layanan.tambah_pengguna("Pak Ahmad", "Teacher", nip="19800101")
+    print("Berhasil tambah:", kode1, "dan", kode2)
 
-    print("Kode siswa:", kode1)
-    print("Kode guru:", kode2)
+    #test validasi nis kembar
+    try:
+        layanan.tambah_pengguna("Budi", "Student", nis="12345", kelas="XI TKJ 2")
+    except ValueError as e:
+        print("[OK] Validasi NIS kembar berjalan:", e)
 
-    hasil_cari = layanan.cari_pengguna("Andi")
-    print("Hasil pencarian 'Andi':", len(hasil_cari), "data ditemukan.")
+    #test edit pengguna
+    semua = layanan.ambil_semua_pengguna()
+    id_andi = semua[0]["id"]
+    layanan.edit_pengguna(id_andi, "Andi Saputra Pratama", "Student", nis="12345", kelas="XI TKJ 2")
+    print("[OK] Berhasil edit data pengguna.")
+
+    #test arsip pengguna
+    layanan.arsip_pengguna(id_andi)
+    sisa = layanan.ambil_semua_pengguna()
+    print("[OK] Sisa pengguna aktif setelah diarsip:", len(sisa))
 
     if os.path.exists(db_tes):
         os.remove(db_tes)

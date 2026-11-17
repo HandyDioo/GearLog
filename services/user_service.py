@@ -17,7 +17,7 @@ class LayananPengguna:
         kode_baru = buat_kode_pengguna(total)
 
         kursor.execute("""
-            INSERT INTO users (user_code, name, user_type, nis, employee_id, class_name)
+            INSERT INTO users (user_code, name, user_type, student_id, employee_id, class_name)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (kode_baru, nama.strip(), jenis, nis, nip, kelas))
 
@@ -29,6 +29,18 @@ class LayananPengguna:
         koneksi = self.db.buat_koneksi()
         kursor = koneksi.cursor()
         kursor.execute("SELECT * FROM users WHERE is_active = 1 ORDER BY name ASC")
+        data = kursor.fetchall()
+        koneksi.close()
+        return data
+
+    def cari_pengguna(self, kata_kunci):
+        koneksi = self.db.buat_koneksi()
+        kursor = koneksi.cursor()
+        pola = f"%{kata_kunci}%"
+        kursor.execute("""
+            SELECT * FROM users 
+            WHERE is_active = 1 AND (name LIKE ? OR user_code LIKE ?)
+        """, (pola, pola))
         data = kursor.fetchall()
         koneksi.close()
         return data

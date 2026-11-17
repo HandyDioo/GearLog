@@ -59,3 +59,25 @@ class LayananPengguna:
         data = kursor.fetchall()
         koneksi.close()
         return data
+
+    def edit_pengguna(self, id_pengguna, nama, jenis, nis=None, nip=None, kelas=None):
+        if not nama or nama.strip() == "":
+            raise ValueError("Nama pengguna wajib diisi!")
+
+        koneksi = self.db.buat_koneksi()
+        kursor = koneksi.cursor()
+        kursor.execute("""
+            UPDATE users 
+            SET name = ?, user_type = ?, student_id = ?, employee_id = ?, class_name = ?
+            WHERE id = ?
+        """, (nama.strip(), jenis, nis, nip, kelas, id_pengguna))
+
+        koneksi.commit()
+        koneksi.close()
+
+    def arsip_pengguna(self, id_pengguna):
+        koneksi = self.db.buat_koneksi()
+        kursor = koneksi.cursor()
+        kursor.execute("UPDATE users SET is_active = 0 WHERE id = ?", (id_pengguna,))
+        koneksi.commit()
+        koneksi.close()

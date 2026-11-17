@@ -9,8 +9,23 @@ class LayananPengguna:
         if not nama or nama.strip() == "":
             raise ValueError("Nama pengguna wajib diisi!")
 
+        if jenis not in ["Student", "Teacher"]:
+            raise ValueError("Jenis pengguna harus Student atau Teacher!")
+
+        if jenis == "Student":
+            if not nis or str(nis).strip() == "":
+                raise ValueError("NIS wajib diisi untuk siswa!")
+            if not kelas or kelas.strip() == "":
+                raise ValueError("Kelas wajib diisi untuk siswa!")
+
         koneksi = self.db.buat_koneksi()
         kursor = koneksi.cursor()
+
+        if jenis == "Student":
+            kursor.execute("SELECT id FROM users WHERE student_id = ?", (str(nis).strip(),))
+            if kursor.fetchone():
+                koneksi.close()
+                raise ValueError("NIS sudah terdaftar pada pengguna lain!")
 
         kursor.execute("SELECT COUNT(*) as total FROM users")
         total = kursor.fetchone()["total"]

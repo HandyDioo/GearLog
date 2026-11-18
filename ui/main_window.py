@@ -68,5 +68,9 @@ class JendelaUtama:
 
         halaman = self.daftar_halaman.get(kunci)
         if halaman:
+            if hasattr(halaman, "muat_data"):
+                halaman.muat_data()
+            if hasattr(halaman, "segarkan_pilihan"):
+                halaman.segarkan_pilihan()
             halaman.pack(fill="both", expand=True)
             self.halaman_aktif = halaman

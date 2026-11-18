@@ -4,7 +4,18 @@ class LayananInventaris:
     def __init__(self, db=None):
         self.db = db if db else PengelolaDatabase()
 
+    def _validasi_input(self, kode_barang, nama, kategori, total_stok):
+        if not kode_barang or kode_barang.strip() == "":
+            raise ValueError("Kode barang wajib diisi!")
+        if not nama or nama.strip() == "":
+            raise ValueError("Nama barang wajib diisi!")
+        if not kategori or kategori.strip() == "":
+            raise ValueError("Kategori wajib diisi!")
+        if not isinstance(total_stok, int) or total_stok < 0:
+            raise ValueError("Stok harus berupa angka bulat minimal 0!")
+
     def tambah_barang(self, kode_barang, nama, kategori, total_stok):
+        self._validasi_input(kode_barang, nama, kategori, total_stok)
         koneksi = self.db.buat_koneksi()
         kursor = koneksi.cursor()
 
@@ -43,6 +54,10 @@ class LayananInventaris:
         return data
 
     def edit_barang(self, id_barang, kode_barang, nama, kategori, total_stok, stok_tersedia):
+        self._validasi_input(kode_barang, nama, kategori, total_stok)
+        if stok_tersedia < 0 or stok_tersedia > total_stok:
+            raise ValueError("Stok tersedia tidak valid!")
+
         koneksi = self.db.buat_koneksi()
         kursor = koneksi.cursor()
         kursor.execute("""

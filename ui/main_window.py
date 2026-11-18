@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from ui.inventory_page import HalamanBarang
 
 class JendelaUtama:
     def __init__(self, root):
@@ -54,6 +55,7 @@ class JendelaUtama:
             lbl.pack(pady=20)
             self.daftar_halaman[kunci] = frame
 
+        self.daftar_halaman["barang"] = HalamanBarang(self.area_konten)    
         self.tampilkan_halaman("dashboard")
 
     def daftarkan_halaman(self, kunci, frame_halaman):

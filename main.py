@@ -1,9 +1,12 @@
+import tkinter as tk
 from database.db_manager import PengelolaDatabase
+from ui.main_window import JendelaUtama
 
 def utama():
-    print("Menjalankan aplikasi GearLog...")
-    db = PengelolaDatabase()
-    print("Database berhasil dimuat di:", db.lokasi_db)
+    PengelolaDatabase()
+    root = tk.Tk()
+    app = JendelaUtama(root)
+    root.mainloop()
 
 if __name__ == "__main__":
     utama()

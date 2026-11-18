@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from ui.inventory_page import HalamanBarang
+from ui.users_page import HalamanPengguna
+from ui.borrowing_page import HalamanPeminjaman
 
 class JendelaUtama:
     def __init__(self, root):
@@ -15,7 +17,6 @@ class JendelaUtama:
         self._bangun_kerangka()
 
     def _bangun_kerangka(self):
-        #sidebar kiri
         sidebar = tk.Frame(self.root, bg="#1e293b", width=200)
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
@@ -26,7 +27,6 @@ class JendelaUtama:
         )
         judul.pack(fill="x")
 
-        #area main konten di kanan
         self.area_konten = ttk.Frame(self.root, padding=15)
         self.area_konten.pack(side="right", fill="both", expand=True)
 
@@ -48,14 +48,15 @@ class JendelaUtama:
             )
             btn.pack(fill="x")
 
-        #halaman placeholder sementara sebelum tiap halaman dibuat
         for _, kunci in menu_navigasi:
             frame = ttk.Frame(self.area_konten)
             lbl = ttk.Label(frame, text=f"Halaman {kunci.capitalize()}", font=("Segoe UI", 14, "bold"))
             lbl.pack(pady=20)
             self.daftar_halaman[kunci] = frame
 
-        self.daftar_halaman["barang"] = HalamanBarang(self.area_konten)    
+        self.daftarkan_halaman("barang", HalamanBarang(self.area_konten))
+        self.daftarkan_halaman("pengguna", HalamanPengguna(self.area_konten))
+        self.daftarkan_halaman("peminjaman", HalamanPeminjaman(self.area_konten))
         self.tampilkan_halaman("dashboard")
 
     def daftarkan_halaman(self, kunci, frame_halaman):

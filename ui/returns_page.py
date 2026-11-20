@@ -160,5 +160,5 @@ class HalamanPengembalian(ttk.Frame):
             messagebox.showinfo("Berhasil", "Pengembalian berhasil dicatat!")
             self.ent_catatan.delete(0, "end")
             self.segarkan_pilihan()
-        except ValueError as err:
+        except Exception as err:
             messagebox.showerror("Gagal", str(err))

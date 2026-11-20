@@ -25,30 +25,32 @@ class LayananPengembalian:
         kursor = koneksi.cursor()
 
         kursor.execute("""
-            SELECT 
-                ld.id as detail_id,
-                ld.item_id,
-                i.item_code,
-                i.name as nama_barang,
-                ld.quantity_borrowed,
-                IFNULL(SUM(rd.quantity_returned), 0) as sudah_kembali
+            SELECT ld.id, ld.item_id, i.item_code, i.name, ld.quantity_borrowed
             FROM loan_details ld
             JOIN items i ON ld.item_id = i.id
-            LEFT JOIN return_details rd ON ld.id = rd.loan_detail_id
             WHERE ld.loan_id = ?
-            GROUP BY ld.id
         """, (id_loan,))
+        daftar_pinjam = kursor.fetchall()
 
         hasil = []
-        for baris in kursor.fetchall():
-            sisa = baris["quantity_borrowed"] - baris["sudah_kembali"]
+        for baris in daftar_pinjam:
+            #menghitung barang yang sudah dikembalikan untuk detail ini
+            kursor.execute("""
+                SELECT quantity_returned FROM return_details WHERE loan_detail_id = ?
+            """, (baris["id"],))
+            
+            sudah_kembali = 0
+            for r in kursor.fetchall():
+                sudah_kembali = sudah_kembali + r["quantity_returned"]
+
+            sisa = baris["quantity_borrowed"] - sudah_kembali
             hasil.append({
-                "detail_id": baris["detail_id"],
+                "detail_id": baris["id"],
                 "item_id": baris["item_id"],
                 "kode_barang": baris["item_code"],
-                "nama_barang": baris["nama_barang"],
+                "nama_barang": baris["name"],
                 "dipinjam": baris["quantity_borrowed"],
-                "sudah_kembali": baris["sudah_kembali"],
+                "sudah_kembali": sudah_kembali,
                 "sisa": sisa
             })
 
@@ -80,8 +82,10 @@ class LayananPengembalian:
             for item in daftar_kembali:
                 detail_id = item["detail_id"]
                 jumlah = item["jumlah"]
-                kondisi = item.get("kondisi", "Baik")
+                kondisi = item["kondisi"]
 
+                if kondisi not in ["Baik", "Rusak", "Hilang"]:
+                    raise ValueError("Kondisi barang tidak valid!")
                 if jumlah <= 0:
                     raise ValueError("Jumlah kembali harus lebih dari 0!")
 
@@ -97,22 +101,34 @@ class LayananPengembalian:
                     VALUES (?, ?, ?, ?)
                 """, (id_return, detail_id, jumlah, kondisi))
 
-            #mengecek apakah semua barang dalam transaksi ini sdh kembali
-            kursor.execute("""
-                SELECT 
-                    SUM(ld.quantity_borrowed) as total_pinjam,
-                    IFNULL((
-                        SELECT SUM(rd.quantity_returned)
-                        FROM return_details rd
-                        JOIN returns r ON rd.return_id = r.id
-                        WHERE r.loan_id = ?
-                    ), 0) as total_kembali
-                FROM loan_details ld
-                WHERE ld.loan_id = ?
-            """, (id_loan, id_loan))
-            rekap = kursor.fetchone()
+                # hanya barang dgn kondisi Baik yang menambah stok tersedia
+                if kondisi == "Baik":
+                    kursor.execute("""
+                        UPDATE items SET available_stock = available_stock + ? WHERE id = ?
+                    """, (jumlah, info["item_id"]))
 
-            if rekap["total_kembali"] >= rekap["total_pinjam"]:
+            kursor.execute("SELECT id, quantity_borrowed FROM loan_details WHERE loan_id = ?", (id_loan,))
+            semua_detail = kursor.fetchall()
+
+            total_pinjam = 0
+            total_kembali = 0
+            ada_hilang = False
+
+            for det in semua_detail:
+                total_pinjam = total_pinjam + det["quantity_borrowed"]
+                kursor.execute("""
+                    SELECT quantity_returned, condition_status 
+                    FROM return_details WHERE loan_detail_id = ?
+                """, (det["id"],))
+
+                for ret in kursor.fetchall():
+                    total_kembali = total_kembali + ret["quantity_returned"]
+                    if ret["condition_status"] == "Hilang":
+                        ada_hilang = True
+
+            if ada_hilang:
+                status_baru = "Bermasalah (Hilang)"
+            elif total_kembali >= total_pinjam:
                 status_baru = "Selesai"
             else:
                 status_baru = "Sebagian Kembali"

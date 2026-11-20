@@ -64,3 +64,28 @@ class LayananRiwayat:
 
         koneksi.close()
         return daftar_barang, daftar_kembali
+
+    def ambil_ringkasan_dashboard(self):
+        koneksi = self.db.buat_koneksi()
+        kursor = koneksi.cursor()
+
+        kursor.execute("SELECT COUNT(*) as total, IFNULL(SUM(available_stock), 0) as stok FROM items WHERE is_archived = 0")
+        data_barang = kursor.fetchone()
+
+        kursor.execute("SELECT COUNT(*) as total FROM loans WHERE status IN ('Dipinjam', 'Sebagian Kembali')")
+        sedang_dipinjam = kursor.fetchone()["total"]
+
+        kursor.execute("SELECT COUNT(*) as total FROM loans WHERE status = 'Bermasalah (Hilang)'")
+        bermasalah = kursor.fetchone()["total"]
+
+        kursor.execute("SELECT COUNT(*) as total FROM users WHERE is_archived = 0")
+        total_pengguna = kursor.fetchone()["total"]
+
+        koneksi.close()
+        return {
+            "jenis_barang": data_barang["total"],
+            "stok_tersedia": data_barang["stok"],
+            "sedang_dipinjam": sedang_dipinjam,
+            "bermasalah": bermasalah,
+            "total_pengguna": total_pengguna
+        }

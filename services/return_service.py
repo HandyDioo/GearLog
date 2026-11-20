@@ -1,3 +1,4 @@
+from datetime import datetime
 from database.db_manager import PengelolaDatabase
 
 class LayananPengembalian:
@@ -53,3 +54,23 @@ class LayananPengembalian:
 
         koneksi.close()
         return hasil
+
+    def proses_pengembalian(self, id_loan, id_pengembali, daftar_kembali, catatan=""):
+        if not id_pengembali:
+            raise ValueError("Pihak yang mengembalikan wajib dipilih!")
+        if len(daftar_kembali) == 0:
+            raise ValueError("Tidak ada barang yang dikembalikan!")
+
+        koneksi = self.db.buat_koneksi()
+        kursor = koneksi.cursor()
+
+        tanggal_kembali = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        kursor.execute("""
+            INSERT INTO returns (loan_id, returned_by_id, return_date, notes)
+            VALUES (?, ?, ?, ?)
+        """, (id_loan, id_pengembali, tanggal_kembali, catatan))
+
+        id_return = kursor.lastrowid
+        koneksi.commit()
+        koneksi.close()
+        return id_return

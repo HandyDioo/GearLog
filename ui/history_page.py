@@ -55,6 +55,11 @@ class HalamanRiwayat(ttk.Frame):
         self.tabel.column("status", width=130, anchor="center")
         self.tabel.column("catatan", width=150)
 
+        #warna baris berdasarkan status transaksi
+        self.tabel.tag_configure("Selesai", background="#dcfce7")
+        self.tabel.tag_configure("Bermasalah (Hilang)", background="#fee2e2")
+        self.tabel.tag_configure("Sebagian Kembali", background="#fef9c3")
+
         self.tabel.pack(fill="both", expand=True)
         self.tabel.bind("<Double-1>", lambda e: self.buka_detail())
 
@@ -71,7 +76,7 @@ class HalamanRiwayat(ttk.Frame):
                 r["id"], r["loan_code"], r["loan_date"],
                 r["nama_pj"], r["nama_pengambil"],
                 r["status"], r["notes"] or "-"
-            ))
+            ), tags=(r["status"],))
 
     def buka_detail(self):
         terpilih = self.tabel.selection()

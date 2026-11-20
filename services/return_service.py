@@ -74,7 +74,7 @@ class LayananPengembalian:
         try:
             tanggal_kembali = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             kursor.execute("""
-                INSERT INTO returns (loan_id, returned_by_id, return_date, notes)
+                INSERT INTO returns (loan_id, returner_id, return_date, notes)
                 VALUES (?, ?, ?, ?)
             """, (id_loan, id_pengembali, tanggal_kembali, catatan))
             id_return = kursor.lastrowid
@@ -97,7 +97,7 @@ class LayananPengembalian:
                     raise ValueError("Jumlah kembali " + info["nama_barang"] + " melebihi sisa pinjaman!")
 
                 kursor.execute("""
-                    INSERT INTO return_details (return_id, loan_detail_id, quantity_returned, condition_status)
+                    INSERT INTO return_details (return_id, loan_detail_id, quantity_returned, condition)
                     VALUES (?, ?, ?, ?)
                 """, (id_return, detail_id, jumlah, kondisi))
 
@@ -117,13 +117,13 @@ class LayananPengembalian:
             for det in semua_detail:
                 total_pinjam = total_pinjam + det["quantity_borrowed"]
                 kursor.execute("""
-                    SELECT quantity_returned, condition_status 
+                    SELECT quantity_returned, condition
                     FROM return_details WHERE loan_detail_id = ?
                 """, (det["id"],))
 
                 for ret in kursor.fetchall():
                     total_kembali = total_kembali + ret["quantity_returned"]
-                    if ret["condition_status"] == "Hilang":
+                    if ret["condition"] == "Hilang":
                         ada_hilang = True
 
             if ada_hilang:

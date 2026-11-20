@@ -5,6 +5,7 @@ from ui.users_page import HalamanPengguna
 from ui.borrowing_page import HalamanPeminjaman
 from ui.returns_page import HalamanPengembalian
 from ui.history_page import HalamanRiwayat
+from ui.dashboard_page import HalamanDashboard
 
 class JendelaUtama:
     def __init__(self, root):
@@ -61,6 +62,7 @@ class JendelaUtama:
         self.daftarkan_halaman("peminjaman", HalamanPeminjaman(self.area_konten))
         self.daftarkan_halaman("pengembalian", HalamanPengembalian(self.area_konten))
         self.daftarkan_halaman("riwayat", HalamanRiwayat(self.area_konten))
+        self.daftarkan_halaman("dashboard", HalamanDashboard(self.area_konten))
         self.tampilkan_halaman("dashboard")
 
     def daftarkan_halaman(self, kunci, frame_halaman):

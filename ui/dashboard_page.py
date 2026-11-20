@@ -38,6 +38,13 @@ class HalamanDashboard(ttk.Frame):
             lbl_nilai.pack(anchor="w", pady=(5, 0))
             self.label_angka[kunci] = lbl_nilai
 
+        info_lab = ttk.Label(
+            self,
+            text="Catatan Lab: Alat yang dikembalikan dalam kondisi Rusak atau Hilang tidak otomatis menambah stok tersedia.",
+            foreground="#475569"
+        )
+        info_lab.pack(anchor="w", pady=(0, 10))
+
         # Daftar transaksi yang masih dipinjam saat ini
         kotak_aktif = ttk.LabelFrame(self, text="Transaksi Peminjaman Terbaru", padding=10)
         kotak_aktif.pack(fill="both", expand=True)

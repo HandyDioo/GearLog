@@ -3,6 +3,7 @@ from tkinter import ttk
 from ui.inventory_page import HalamanBarang
 from ui.users_page import HalamanPengguna
 from ui.borrowing_page import HalamanPeminjaman
+from ui.returns_page import HalamanPengembalian
 
 class JendelaUtama:
     def __init__(self, root):
@@ -57,6 +58,7 @@ class JendelaUtama:
         self.daftarkan_halaman("barang", HalamanBarang(self.area_konten))
         self.daftarkan_halaman("pengguna", HalamanPengguna(self.area_konten))
         self.daftarkan_halaman("peminjaman", HalamanPeminjaman(self.area_konten))
+        self.daftarkan_halaman("pengembalian", HalamanPengembalian(self.area_konten))
         self.tampilkan_halaman("dashboard")
 
     def daftarkan_halaman(self, kunci, frame_halaman):

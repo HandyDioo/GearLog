@@ -78,7 +78,7 @@ class LayananRiwayat:
         kursor.execute("SELECT COUNT(*) as total FROM loans WHERE status = 'Bermasalah (Hilang)'")
         bermasalah = kursor.fetchone()["total"]
 
-        kursor.execute("SELECT COUNT(*) as total FROM users WHERE is_archived = 0")
+        kursor.execute("SELECT COUNT(*) as total FROM users")
         total_pengguna = kursor.fetchone()["total"]
 
         koneksi.close()
